@@ -24,8 +24,24 @@ function nonEmpty<T>(value: T | undefined | null | ""): value is T {
 
 type Line = { label: string; value: string };
 
+function attributionSummary(payload: ContactPayload): string | null {
+  const parts = [
+    payload.utmSource,
+    payload.utmMedium,
+    payload.utmCampaign,
+    payload.utmContent,
+    payload.utmTerm,
+  ].filter((v): v is string => nonEmpty(v));
+  return parts.length > 0 ? parts.join(" / ") : null;
+}
+
 function buildLines(payload: ContactPayload): Line[] {
-  const lines: Line[] = [
+  const lines: Line[] = [];
+
+  const source = attributionSummary(payload);
+  if (source) lines.push({ label: "Source", value: source });
+
+  lines.push(
     { label: "Name", value: payload.name },
     { label: "Company", value: payload.company },
     { label: "Email", value: payload.email },
@@ -35,7 +51,7 @@ function buildLines(payload: ContactPayload): Line[] {
       value: payload.projectTypes.map((t) => projectTypeLabels[t]).join(", "),
     },
     { label: "Brief", value: payload.brief },
-  ];
+  );
 
   if (nonEmpty(payload.scale)) lines.push({ label: "Scale", value: payload.scale });
   if (nonEmpty(payload.dataSensitivity))
@@ -102,7 +118,7 @@ export async function sendContactEmail(payload: ContactPayload): Promise<SendRes
 
   try {
     const { error } = await client.emails.send({
-      from: `${site.name} <onboarding@resend.dev>`, // TODO(launch): swap to noreply@kybrium.com once domain is verified in Resend.
+      from: `${site.name} <noreply@kybrium.com>`,
       to: [site.email],
       replyTo: payload.email,
       subject: email.subject,

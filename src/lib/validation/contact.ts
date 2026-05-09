@@ -126,6 +126,13 @@ export const contactSchema = z.object({
   sector: optionalString(200),
   source: optionalString(200),
 
+  // attribution — auto-captured from utm_* on landing, never user-typed
+  utmSource: optionalString(200),
+  utmMedium: optionalString(200),
+  utmCampaign: optionalString(200),
+  utmContent: optionalString(200),
+  utmTerm: optionalString(200),
+
   // hidden — bot trap and challenge token
   honeypot: z.string().max(0, "Bot detected").optional().or(z.literal("")),
   turnstileToken: z.string().optional().or(z.literal("")),
@@ -147,6 +154,11 @@ export const contactFormDefaults: ContactPayload = {
   companySize: "",
   sector: "",
   source: "",
+  utmSource: "",
+  utmMedium: "",
+  utmCampaign: "",
+  utmContent: "",
+  utmTerm: "",
   honeypot: "",
   turnstileToken: "",
 };

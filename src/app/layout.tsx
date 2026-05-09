@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
+import Script from "next/script";
+import { AttributionTracker } from "@/components/AttributionTracker";
+import { ContactModalProvider } from "@/components/ContactModal";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { ScrollAnimations } from "@/components/ScrollAnimations";
@@ -65,8 +68,10 @@ const organizationSchema = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const umamiWebsiteId = process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID;
+
   return (
-    <html lang="en-GB" className={geist.variable}>
+    <html lang="en-GB" className={geist.variable} suppressHydrationWarning>
       <body className="flex min-h-dvh flex-col">
         {/* Reveal-tagged elements are hidden by default in globals.css so the
             GSAP timeline can animate them in. For users with JS disabled, this
@@ -79,17 +84,29 @@ export default function RootLayout({
             }}
           />
         </noscript>
+        <AttributionTracker />
         <ScrollAnimations />
         <ScrollPath />
-        <Header />
-        <div className="flex-1">{children}</div>
-        <Footer />
+        <ContactModalProvider>
+          <Header />
+          <div className="flex-1">{children}</div>
+          <Footer />
+        </ContactModalProvider>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(organizationSchema),
           }}
         />
+        {umamiWebsiteId ? (
+          <Script
+            id="umami"
+            src="/stats/script.js"
+            data-website-id={umamiWebsiteId}
+            data-host-url="/stats"
+            strategy="afterInteractive"
+          />
+        ) : null}
       </body>
     </html>
   );

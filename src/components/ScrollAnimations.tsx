@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 // Wires up:
@@ -9,7 +10,13 @@ import { useEffect } from "react";
 //                             ScrollTrigger per parent (not per child)
 // Initial-hidden state lives in globals.css; <noscript> in layout.tsx reverses
 // it for no-JS users.
+// Re-runs on pathname change: the layout (and this effect) persist across
+// soft client-side navigations, but ScrollTrigger.batch snapshots the DOM at
+// creation time — without re-running, reveal nodes on the new page would stay
+// hidden until a hard refresh.
 export function ScrollAnimations() {
+  const pathname = usePathname();
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -101,7 +108,7 @@ export function ScrollAnimations() {
       cancelled = true;
       ctx?.revert();
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }

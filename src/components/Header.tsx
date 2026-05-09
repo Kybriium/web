@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { useContactModal } from "@/components/ContactModal";
+
 const navLinks = [
   { href: "/studio", label: "Studio" },
   { href: "/examples", label: "Examples" },
@@ -16,6 +18,7 @@ function isActiveRoute(pathname: string | null, href: string): boolean {
 
 export function Header() {
   const pathname = usePathname();
+  const { open: openContactModal } = useContactModal();
 
   return (
     <header className="sticky top-0 z-50 border-b border-brand-line/40 bg-brand-canvas/80 backdrop-blur-md">
@@ -61,8 +64,9 @@ export function Header() {
           })}
         </nav>
 
-        <Link
-          href="/#contact"
+        <button
+          type="button"
+          onClick={openContactModal}
           className="group inline-flex h-10 items-center justify-center rounded-full bg-brand-teal px-5 text-sm font-medium text-brand-canvas transition-colors duration-200 hover:bg-brand-ink"
         >
           Start a project
@@ -72,7 +76,7 @@ export function Header() {
           >
             →
           </span>
-        </Link>
+        </button>
       </div>
     </header>
   );

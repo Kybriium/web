@@ -5,6 +5,7 @@ import { Mail, MoveRight } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 
+import { useContactModal } from "@/components/ContactModal";
 import { Button } from "@/components/ui/button";
 import { site } from "@/lib/site";
 
@@ -18,6 +19,7 @@ const HeroScene = dynamic(
 );
 
 export function Hero() {
+  const { open: openContactModal } = useContactModal();
   const [titleNumber, setTitleNumber] = useState(0);
   const titles = useMemo(
     () => ["web platforms", "internal tools", "automation"],
@@ -119,10 +121,14 @@ export function Hero() {
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row" data-hero-stage>
-          <Button asChild size="lg" variant="default" className="gap-3">
-            <a href="#contact">
-              Start a project <MoveRight className="h-5 w-5" />
-            </a>
+          <Button
+            type="button"
+            size="lg"
+            variant="default"
+            className="gap-3"
+            onClick={openContactModal}
+          >
+            Start a project <MoveRight className="h-5 w-5" />
           </Button>
           <Button asChild size="lg" variant="outline" className="gap-3">
             <a href={`mailto:${site.email}`}>

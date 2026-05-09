@@ -3,6 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { track } from "@/lib/analytics";
+import { getAttribution } from "@/lib/attribution";
 import {
   budgetLabels,
   budgetRanges,
@@ -193,6 +195,10 @@ export function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  // Defer Turnstile init until the visitor actually engages with the form.
+  // Without this, every landing-page visit would mount the widget and hit
+  // Cloudflare for users who never intend to submit anything.
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   const {
     register,
@@ -222,15 +228,21 @@ export function ContactForm() {
     setStatus("submitting");
     setErrorMessage(null);
 
+    const enriched = { ...values, ...getAttribution() };
+
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify(enriched),
       });
 
       if (res.status === 200) {
         setStatus("success");
+        track("contact-submitted", {
+          budget: values.budget,
+          projectTypes: values.projectTypes.length,
+        });
         return;
       }
 
@@ -279,7 +291,17 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      onFocusCapture={() => {
+        if (!hasInteracted) {
+          setHasInteracted(true);
+          track("contact-form-engaged");
+        }
+      }}
+      noValidate
+      className="space-y-8"
+    >
       {/* honeypot — visually hidden, screen-reader-hidden, never auto-completed */}
       <div
         aria-hidden="true"
@@ -500,7 +522,7 @@ export function ContactForm() {
         </div>
       </details>
 
-      {turnstileSiteKey ? (
+      {turnstileSiteKey && hasInteracted ? (
         <div>
           <TurnstileWidget
             siteKey={turnstileSiteKey}

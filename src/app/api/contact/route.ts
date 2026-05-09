@@ -3,6 +3,7 @@ import { contactSchema } from "@/lib/validation/contact";
 import { checkContactRateLimit } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { sendContactEmail } from "@/lib/email/contact";
+import { sendLeadToTrello } from "@/lib/leads/trello";
 
 function getClientIp(req: Request): string {
   const xff = req.headers.get("x-forwarded-for");
@@ -61,7 +62,19 @@ export async function POST(req: Request) {
     );
   }
 
-  const send = await sendContactEmail(payload);
+  // Email is the source of truth; Trello is a convenience surface. Run in
+  // parallel so the form response stays tight, and fail open on Trello so a
+  // downed Trello never blocks a real lead.
+  const [emailSettled, trelloSettled] = await Promise.allSettled([
+    sendContactEmail(payload),
+    sendLeadToTrello(payload),
+  ]);
+
+  const send =
+    emailSettled.status === "fulfilled"
+      ? emailSettled.value
+      : { delivered: false, reason: "exception" };
+
   if (!send.delivered && send.reason !== "skipped-no-key") {
     return NextResponse.json(
       { ok: false, reason: "send-failed" },
@@ -69,9 +82,12 @@ export async function POST(req: Request) {
     );
   }
 
+  const trelloDelivered =
+    trelloSettled.status === "fulfilled" && trelloSettled.value.delivered;
+
   // Log shape only — never the body — so we know enquiries are arriving.
   console.info(
-    `[contact] accepted ip=${ip.slice(0, 7)}… types=${payload.projectTypes.length} delivered=${send.delivered}`,
+    `[contact] accepted ip=${ip.slice(0, 7)}… types=${payload.projectTypes.length} email=${send.delivered} trello=${trelloDelivered}`,
   );
 
   return NextResponse.json({ ok: true });
