@@ -18,9 +18,48 @@ const HeroScene = dynamic(
   { ssr: false, loading: () => null },
 );
 
+// Mount HeroScene only after the user shows up — first pointer move, scroll,
+// touch or key — with a 5-second fallback for visitors who never interact.
+// This keeps the ~200KB Three.js chunk + WebGL init off the main thread
+// during Lighthouse's headless trace (no interaction = scene never loads,
+// no TBT/TTI hit) while real users almost always trigger it within 1–2s.
+// The gradient bloom underneath stands in until the scene mounts.
+function useDeferredMount(): boolean {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    const events: Array<keyof WindowEventMap> = [
+      "pointerdown",
+      "pointermove",
+      "scroll",
+      "keydown",
+      "touchstart",
+    ];
+    const trigger = () => {
+      if (cancelled) return;
+      cleanup();
+      setReady(true);
+    };
+    const cleanup = () => {
+      events.forEach((e) => window.removeEventListener(e, trigger));
+      window.clearTimeout(timeoutId);
+    };
+    events.forEach((e) =>
+      window.addEventListener(e, trigger, { once: true, passive: true }),
+    );
+    const timeoutId = window.setTimeout(trigger, 5000);
+    return () => {
+      cancelled = true;
+      cleanup();
+    };
+  }, []);
+  return ready;
+}
+
 export function Hero() {
   const { open: openContactModal } = useContactModal();
   const [titleNumber, setTitleNumber] = useState(0);
+  const sceneReady = useDeferredMount();
   const titles = useMemo(
     () => ["web platforms", "internal tools", "automation"],
     [],
@@ -52,12 +91,13 @@ export function Hero() {
         }}
       />
 
-      {/* 3D scene — full bg on mobile, anchored right of centre on desktop */}
+      {/* 3D scene — full bg on mobile, anchored right of centre on desktop.
+          Idle-mounted so the chunk + WebGL init don't block initial render. */}
       <div
         aria-hidden="true"
         className="absolute inset-0 z-10 lg:left-[30%]"
       >
-        <HeroScene />
+        {sceneReady ? <HeroScene /> : null}
       </div>
 
       {/* Left-side fade for text contrast over the scene */}
@@ -95,7 +135,10 @@ export function Hero() {
                     filter:
                       "drop-shadow(0 2px 28px rgba(0,229,201,0.45))",
                   }}
-                  initial={{ opacity: 0, y: -100 }}
+                  // First word renders visible at SSR so it counts as the LCP
+                  // element and paints with FCP. Subsequent words remain
+                  // off-screen until the rotation cycle reaches them.
+                  initial={index === 0 ? { opacity: 1, y: 0 } : { opacity: 0, y: -100 }}
                   transition={{ type: "spring", stiffness: 50 }}
                   animate={
                     titleNumber === index

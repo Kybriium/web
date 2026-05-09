@@ -1,4 +1,4 @@
-import { ContactForm } from "@/components/ContactForm";
+import { LazyContactForm } from "@/components/LazyContactForm";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { site } from "@/lib/site";
 
@@ -43,7 +43,7 @@ export function Contact() {
           </div>
         </aside>
 
-        <ContactForm />
+        <LazyContactForm />
       </div>
     </section>
   );

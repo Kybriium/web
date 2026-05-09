@@ -26,7 +26,7 @@ export function Header() {
         <Link
           href="/"
           aria-label="Kybrium home"
-          className={`relative text-sm font-semibold uppercase tracking-[0.28em] transition-colors ${
+          className={`relative inline-flex min-h-[44px] items-center text-sm font-semibold uppercase tracking-[0.28em] transition-colors ${
             isActiveRoute(pathname, "/")
               ? "text-brand-teal"
               : "text-brand-teal/85 hover:text-brand-teal"
@@ -46,7 +46,7 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 aria-current={active ? "page" : undefined}
-                className={`relative py-1 text-sm transition-colors duration-200 ${
+                className={`relative inline-flex min-h-[44px] items-center px-1 text-sm transition-colors duration-200 ${
                   active
                     ? "text-brand-ink"
                     : "text-brand-muted hover:text-brand-ink"

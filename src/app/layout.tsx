@@ -7,6 +7,7 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { ScrollAnimations } from "@/components/ScrollAnimations";
 import { ScrollPath } from "@/components/ScrollPath";
+import { ScrollToTopOnNav } from "@/components/ScrollToTopOnNav";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -120,6 +121,7 @@ export default function RootLayout({
           />
         </noscript>
         <AttributionTracker />
+        <ScrollToTopOnNav />
         <ScrollAnimations />
         <ScrollPath />
         <ContactModalProvider>

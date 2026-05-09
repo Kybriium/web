@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
+import dynamic from "next/dynamic";
 import {
   createContext,
   useCallback,
@@ -13,9 +14,16 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 
-import { ContactForm } from "@/components/ContactForm";
 import { track } from "@/lib/analytics";
 import { site } from "@/lib/site";
+
+// Same dynamic chunk the inline section uses, so it loads once and serves
+// both surfaces. Defer to avoid pulling Zod/RHF/Turnstile into the initial
+// landing-page bundle.
+const ContactForm = dynamic(
+  () => import("@/components/ContactForm").then((m) => ({ default: m.ContactForm })),
+  { ssr: false },
+);
 
 type ContactModalContextValue = {
   isOpen: boolean;
