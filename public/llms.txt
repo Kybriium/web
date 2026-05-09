@@ -1,0 +1,40 @@
+# Kybrium
+
+> Kybrium is a UK software studio building web platforms, internal tools, and automation for small and mid-sized businesses. Fixed-price, end-to-end, based in Cambridgeshire, England. Trading name of Cherya Holdings Limited (UK company number 17203315).
+
+## What we do
+
+We focus on five buckets of work, with depth in sales/ops automation and database-heavy applications:
+
+- **Web platforms and websites** — marketing sites, landing pages, marketplaces, multi-tenant web apps, custom dashboards and admin interfaces
+- **Internal tools and automation** — custom CRMs, stock control, fleet/driver tracking, scheduling, form builders, workflow automation across Microsoft 365, RingCentral, and existing CRMs
+- **Database-heavy applications** — systems where data integrity, reporting, and scale matter, built with healthcare-grade habits
+- **Hosting, maintenance, SEO** — ongoing maintenance and on-page SEO for sites we build or inherit
+- **Mobile app advisory** — App Store / Play Store submission strategy and review-requirements advice (we do not publish to stores on behalf of clients)
+
+## Who we are for
+
+UK small-to-mid-sized businesses (10–200 employees) — operations directors, founders, and ops/sales managers evaluating whether to trust a small studio with real money. Technically literate but time-poor. Not developers themselves.
+
+## How we work
+
+- Fixed prices, quoted per-project after a discovery call
+- A small number of clients at a time
+- End-to-end ownership — design, build, ship, maintain
+- UK-based, supports UK businesses
+- One business day reply on enquiries; fixed quote within a week of the discovery call
+
+## Pages
+
+- [Home](https://kybrium.com/) — services, case studies, contact form
+- [Studio](https://kybrium.com/studio) — how we think about software, who we build for, why we work the way we do
+- [Examples](https://kybrium.com/examples) — concept projects and demonstrations of capability
+- [Privacy notice](https://kybrium.com/privacy) — UK GDPR-aligned privacy policy
+- [Terms](https://kybrium.com/terms) — terms of engagement
+
+## Contact
+
+- Email: contact@kybrium.com
+- Region: Cambridgeshire, United Kingdom
+- Legal entity: Cherya Holdings Limited, registered in England and Wales, company number 17203315
+- Registered office: 167-169 Great Portland Street, 5th Floor, London W1W 5PF

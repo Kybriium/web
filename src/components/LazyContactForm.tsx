@@ -45,9 +45,8 @@ export function LazyContactForm() {
   }, []);
 
   return (
-    <>
-      <div ref={sentinelRef} aria-hidden="true" />
+    <div ref={sentinelRef}>
       {shouldMount ? <ContactForm /> : <FormSkeleton />}
-    </>
+    </div>
   );
 }
