@@ -49,10 +49,12 @@ export const viewport: Viewport = {
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": `${site.url}/#organization`,
   name: site.name,
   legalName: site.legalName,
   url: site.url,
   email: site.email,
+  logo: `${site.url}/logo.png`,
   address: {
     "@type": "PostalAddress",
     addressCountry: site.countryCode,
@@ -63,6 +65,39 @@ const organizationSchema = {
     propertyID: "UK Companies House registration number",
     value: site.companyNumber,
   },
+};
+
+const servicesSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Service",
+      name: "Web platforms and websites",
+      description:
+        "Marketing sites, landing pages, marketplaces, multi-tenant web apps, custom dashboards and admin interfaces — built end-to-end for UK small and mid-sized businesses.",
+      provider: { "@id": `${site.url}/#organization` },
+      areaServed: { "@type": "Country", name: site.country },
+      serviceType: "Web platform development",
+    },
+    {
+      "@type": "Service",
+      name: "Internal tools and automation",
+      description:
+        "Custom CRMs, stock control, scheduling, dashboards, form builders, and workflow automation across Microsoft 365, RingCentral, and existing CRMs for UK businesses.",
+      provider: { "@id": `${site.url}/#organization` },
+      areaServed: { "@type": "Country", name: site.country },
+      serviceType: "Internal tools and workflow automation",
+    },
+    {
+      "@type": "Service",
+      name: "Database-heavy applications",
+      description:
+        "Systems where data integrity, reporting, and scale matter — built with healthcare-grade habits for UK small and mid-sized businesses.",
+      provider: { "@id": `${site.url}/#organization` },
+      areaServed: { "@type": "Country", name: site.country },
+      serviceType: "Custom database applications",
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -96,6 +131,12 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify(organizationSchema),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(servicesSchema),
           }}
         />
         {umamiWebsiteId ? (
